@@ -1,0 +1,140 @@
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#fbf5e6"><meta name="description" content="Pick a parcel, fit it in the truck, and watch your delivery roll! Sixty free parcel packing puzzles, from warm-up deliveries to expert routes."><title>Parcel Fit — Pack it. Send it!</title><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9763002183080872" crossorigin="anonymous"></script></head><body>
+<main class="arcade">
+<section id="home-screen" class="home-screen" aria-labelledby="home-title">
+  <div class="title-landscape" aria-hidden="true"></div>
+  <div class="title-tools">
+    <button id="help-button" aria-haspopup="dialog" aria-label="How to play" title="How to play"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"> <circle cx="12" cy="12" r="8.5"/> <path d="M9.3 9.1a2.8 2.8 0 1 1 4.4 2.35C12.5 12.2 12 12.65 12 14"/> <circle cx="12" cy="16.8" r=".9" fill="currentColor" stroke="none"/> </svg></button>
+    <button id="home-settings" aria-haspopup="dialog" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"> <path d="M4.5 6.5h6m4 0h5m-15 5.5h3m4 0h8m-15 5.5h9m4 0h2"/> <circle cx="12.5" cy="6.5" r="2"/> <circle cx="9.5" cy="12" r="2"/> <circle cx="15.5" cy="17.5" r="2"/> </svg></button>
+  </div>
+  <div class="title-content">
+    <h1 id="home-title">Parcel Fit</h1>
+    <div class="title-artwork">
+      <img class="title-truck" src="/title-truck.png" alt="" fetchpriority="high" draggable="false">
+    </div>
+    <div class="title-action">
+      <button id="home-play" class="home-play" aria-describedby="home-level-label">
+        <svg viewBox="0 0 22 22" width="22" height="22" aria-hidden="true" focusable="false"><path fill="currentColor" d="M5 4.9a1.45 1.45 0 0 1 2.2-1.24l11 6.09a1.45 1.45 0 0 1 0 2.54l-11 6.08A1.45 1.45 0 0 1 5 17.1Z"/></svg>
+        <strong id="home-play-title">Play</strong>
+      </button>
+      <span id="home-level-label" class="title-level">Level 1</span>
+    </div>
+    <nav class="home-menu" aria-label="Parcel Fit menu">
+      <button id="home-map" aria-haspopup="dialog" aria-label="Delivery map"><span><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"> <path d="m3.5 6.5 5.5-2.5 6 2.5 5.5-2.5v13.5L15 20l-6-2.5L3.5 20zM9 4v13.5m6-11v13.5"/> </svg></span>Map</button>
+      <button id="home-levels" aria-haspopup="dialog"><span><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"> <rect x="8.5" y="3.5" width="7" height="7" rx="1.25"/> <rect x="4" y="13.5" width="7" height="7" rx="1.25"/> <rect x="13" y="13.5" width="7" height="7" rx="1.25"/> <path d="M12 3.5V6m-4.5 7.5V16m9-2.5V16"/> </svg></span>Levels</button>
+      <button id="open-achievements" aria-haspopup="dialog" aria-label="Achievements"><span><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"> <path d="M7.5 4.5h9v5a4.5 4.5 0 0 1-9 0zM7.5 6H4v1a4 4 0 0 0 3.75 4m8.75-5H20v1a4 4 0 0 1-3.75 4M12 14v5.5m-4 0h8"/> </svg></span>Medals</button>
+      <button id="open-album" aria-haspopup="dialog"><span><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"> <rect x="3.5" y="5.25" width="17" height="13.5" rx="2"/> <path d="M13 8.5v7m2.6-7.5h2.2v2.7h-2.2zM6 15.5l2-3 2.5 3m5-2h2.2m-2.2 2h2.2"/> <circle cx="9.5" cy="9" r=".5" fill="currentColor" stroke="none"/> </svg></span>Postcards</button>
+    </nav>
+  </div>
+</section>
+<section id="game-screen" class="game" aria-label="Parcel Fit packing game" hidden>
+<header class="game-header">
+  <button id="game-home" class="game-home"><span aria-hidden="true">‹</span> Home</button>
+  <strong class="levelnum" id="levelnum"></strong>
+  <div class="load-meter">
+    <strong class="load-count" id="count"></strong>
+    <div class="meter-track" id="meter" role="progressbar" aria-label="Truck packing progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="meter-fill"></div></div>
+  </div>
+</header>
+<div id="instruction" class="instruction"><span id="message" aria-live="polite"></span><button id="guide-dismiss" aria-label="Dismiss the visual guide">Skip</button></div>
+<div class="canvaswrap"><canvas id="board" aria-label="Packing board. Press 1 to 6 to select a box, arrows to move, Enter to place, and R to rotate." aria-keyshortcuts="ArrowLeft ArrowRight ArrowUp ArrowDown Enter R H L" tabindex="0"></canvas><div class="feedback" id="feedback" role="status" aria-live="polite"></div></div>
+<dialog id="finish" class="finish" aria-labelledby="finish-title" aria-describedby="finish-performance finish-message finish-achievements">
+  <div class="finish-card">
+    <p id="finish-kicker" class="finish-kicker">LEVEL COMPLETE</p>
+    <div id="finish-stars" class="finish-stars" role="img" aria-label="0 of 3 stars"><span></span><span></span><span></span></div>
+    <div class="finish-icon" aria-hidden="true"><span class="brandbox"></span><span class="finish-check">✓</span></div>
+    <h1 id="finish-title">Delivery complete!</h1>
+    <p id="finish-performance" class="finish-performance" hidden></p>
+    <p id="finish-message" hidden></p>
+    <div id="finish-postcard" class="finish-postcard" hidden></div>
+    <div id="finish-achievements" class="finish-award" hidden></div>
+    <button id="continue" class="game-button next" autofocus>Next delivery →</button>
+    <div class="finish-links"><button id="replay" class="replay">Replay</button><button id="finish-home" class="replay">Home</button></div>
+  </div>
+</dialog>
+<dialog id="ad-test-dialog" class="ad-test-dialog" aria-labelledby="ad-test-title" aria-describedby="ad-test-message">
+  <div class="ad-test-card">
+    <span class="ad-test-badge">TEST AD</span>
+    <h2 id="ad-test-title" data-ad-title>Test advertisement</h2>
+    <p id="ad-test-message" data-ad-message>This is only shown while testing ads locally.</p>
+    <button class="game-button next" data-ad-action type="button">Continue</button>
+  </div>
+</dialog>
+<div class="controls" aria-label="Game controls">
+  <span id="selection" class="sr-only" role="status"></span>
+  <button id="undo" class="utility-button"><span aria-hidden="true">↶</span>Undo</button>
+  <button id="restart" class="utility-button"><span aria-hidden="true">⟲</span>Restart</button>
+  <button id="rotate" class="game-button rotate" title="Rotate (R)"><span aria-hidden="true">↻</span>Rotate</button>
+  <button id="return" class="tray-button"><span aria-hidden="true">↙</span>Tray</button>
+  <button id="hint-button" class="hint-button"><span aria-hidden="true">✦</span><span id="hint-label">Hint 3</span></button>
+  <button id="reward-hint" class="hint-button reward-hint" hidden><span aria-hidden="true">▶</span>Watch ad · +1 hint</button>
+</div>
+</section>
+<dialog id="help-dialog" class="game-dialog" aria-labelledby="help-title"><button id="help-close" class="dialog-close" aria-label="Close how to play">×</button><h2 id="help-title">How to play</h2><ol class="help-steps"><li><span class="step-illustration">▰ <b>↑</b></span><div><strong>1. Pick a parcel</strong><p>The cardboard boxes in the tray are yours to load. Touch any box.</p></div></li><li><span class="step-illustration">▦</span><div><strong>2. Drag it into the truck</strong><p>Drop on a green outline. You can also tap a box, then tap where the box’s letter belongs.</p></div></li><li><span class="step-illustration">↻</span><div><strong>3. Turn it to fit</strong><p>Tap Rotate to turn your box. Use Tray to take a loaded box back out.</p></div></li></ol><p class="help-note">Fit every parcel to send the truck on its way. Bolted cargo stays fixed in later deliveries. Pack around it. Stuck? Undo or Hint can help.</p><p class="help-note">Keyboard on the board: 1–6 selects a box, arrow keys move, Enter places, and R rotates. Tap the driver or press H for the horn. Tap the front of the cab or press L for headlights.</p><button id="show-guide" class="game-button next">Show guide</button></dialog>
+<dialog id="levels-dialog" class="game-dialog level-picker-dialog" aria-labelledby="levels-title">
+  <div class="level-picker-header">
+    <button id="levels-close" class="dialog-close" aria-label="Close levels">×</button>
+    <h2 id="levels-title">Levels</h2>
+    <p id="route-summary" class="route-summary" aria-live="polite"></p>
+    <div class="picker-filters">
+      <label><span class="sr-only">Difficulty</span><select id="difficulty-filter"><option value="">All difficulties</option></select></label>
+      <label><span class="sr-only">Route</span><select id="route-filter"><option value="">All routes</option></select></label>
+    </div>
+  </div>
+  <div id="level-list" class="level-list"></div>
+</dialog>
+<dialog id="world-map-dialog" class="game-dialog world-map-dialog" aria-labelledby="world-map-title" aria-describedby="world-map-status">
+  <header class="world-map-header">
+    <div class="world-map-heading">
+      <h2 id="world-map-title">Delivery map</h2>
+      <p id="world-map-status" class="world-map-status" aria-live="polite"></p>
+      <div class="world-map-progress" aria-label="Delivery progress">
+        <span id="world-map-progress-label"></span>
+        <span class="world-map-progress-track" aria-hidden="true"><span id="world-map-progress-fill"></span></span>
+      </div>
+    </div>
+    <button id="map-recenter" class="map-recenter" type="button" title="Center on truck">Find truck</button>
+    <button id="map-skip" class="map-skip" type="button" hidden>Skip drive →</button>
+    <button id="map-close" class="dialog-close" type="button" aria-label="Close delivery map">×</button>
+  </header>
+  <div id="world-map-sheet" class="world-map-sheet"></div>
+</dialog>
+<dialog id="album-dialog" class="game-dialog album-dialog" aria-labelledby="album-title"><button id="album-close" class="dialog-close" aria-label="Close postcards">×</button><h2 id="album-title">Postcards</h2><p class="help-note">Earn a postcard every 6 levels.</p><div id="next-postcard" class="next-postcard" hidden></div><div id="postcards" class="postcard-grid"></div></dialog>
+<dialog id="achievements-dialog" class="game-dialog achievements-dialog" aria-labelledby="achievements-title">
+  <button id="achievements-close" class="dialog-close" aria-label="Close achievements">×</button>
+  <h2 id="achievements-title">Achievements</h2>
+  <div class="achievements-progress">
+    <strong id="achievements-summary"></strong>
+    <progress id="achievements-meter" aria-label="Achievements earned" value="0"></progress>
+  </div>
+  <ul id="achievement-list" class="achievement-list"></ul>
+</dialog>
+<dialog id="settings-dialog" class="game-dialog settings-dialog" aria-labelledby="settings-title">
+  <button id="settings-close" class="dialog-close" aria-label="Close settings" autofocus>×</button>
+  <h2 id="settings-title">Settings</h2>
+  <div class="audio-settings">
+    <section class="audio-setting" aria-labelledby="settings-music-label">
+      <label class="audio-switch">
+        <span id="settings-music-label">Music</span>
+        <input id="settings-music" type="checkbox" role="switch">
+      </label>
+      <label class="audio-volume">
+        <span>Music volume</span>
+        <span id="settings-music-value" class="audio-value" aria-hidden="true"></span>
+        <input id="settings-music-volume" type="range" min="0" max="100" value="35">
+      </label>
+    </section>
+    <section class="audio-setting" aria-labelledby="settings-effects-label">
+      <label class="audio-switch">
+        <span id="settings-effects-label">Sound effects</span>
+        <input id="settings-effects" type="checkbox" role="switch" checked>
+      </label>
+      <label class="audio-volume">
+        <span>Effects volume</span>
+        <span id="settings-effects-value" class="audio-value" aria-hidden="true"></span>
+        <input id="settings-effects-volume" type="range" min="0" max="100" value="100">
+      </label>
+    </section>
+  </div>
+  <p id="settings-audio-status" class="audio-status" role="status" hidden></p>
+</dialog>
+</main><script type="module" src="/src/main.ts"></script></body></html>
