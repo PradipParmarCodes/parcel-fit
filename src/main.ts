@@ -55,7 +55,11 @@ const ads=createAds({
 const homeAdSlot=document.querySelector<HTMLElement>('.home-ad-slot');
 const homeAdContainer=$('container-9dedbeb1a7039a5b63a52d317c3a8904');
 if(homeAdSlot&&homeAdContainer&&typeof MutationObserver!=='undefined'){
- const hasAd=()=>homeAdContainer.childElementCount>0||Boolean(homeAdContainer.textContent?.trim());
+ const hasAd=()=>Array.from(homeAdContainer.querySelectorAll<HTMLElement>('iframe, img, video, a, [role="img"]')).some(node=>{
+  const rect=node.getBoundingClientRect(),style=getComputedStyle(node);
+  if(rect.width<4||rect.height<4||style.display==='none'||style.visibility==='hidden')return false;
+  return node.tagName!=='IFRAME'||Boolean((node as HTMLIFrameElement).src&&(node as HTMLIFrameElement).src!=='about:blank');
+ });
  const adObserver=new MutationObserver(()=>{
   if(!hasAd()){return;}
   homeAdSlot.dataset.filled='true';
@@ -63,7 +67,8 @@ if(homeAdSlot&&homeAdContainer&&typeof MutationObserver!=='undefined'){
  });
  adObserver.observe(homeAdContainer,{childList:true,subtree:true});
  window.setTimeout(()=>{
-  if(!hasAd())homeAdSlot.classList.add('ad-empty');
+  if(hasAd())homeAdSlot.dataset.filled='true';
+  else homeAdSlot.classList.add('ad-empty');
   adObserver.disconnect();
  },15000);
 }
