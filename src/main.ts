@@ -52,6 +52,21 @@ const ads=createAds({
  onPause:()=>{adOpen=true;},
  onResume:()=>{adOpen=false;requestGameFrame();},
 });
+const homeAdSlot=document.querySelector<HTMLElement>('.home-ad-slot');
+const homeAdContainer=$('container-9dedbeb1a7039a5b63a52d317c3a8904');
+if(homeAdSlot&&homeAdContainer&&typeof MutationObserver!=='undefined'){
+ const hasAd=()=>homeAdContainer.childElementCount>0||Boolean(homeAdContainer.textContent?.trim());
+ const adObserver=new MutationObserver(()=>{
+  if(!hasAd()){return;}
+  homeAdSlot.dataset.filled='true';
+  adObserver.disconnect();
+ });
+ adObserver.observe(homeAdContainer,{childList:true,subtree:true});
+ window.setTimeout(()=>{
+  if(!hasAd())homeAdSlot.classList.add('ad-empty');
+  adObserver.disconnect();
+ },15000);
+}
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
 type DeviceNavigator=Navigator&{deviceMemory?:number};
 const deviceNavigator=typeof navigator==='undefined'?null:navigator as DeviceNavigator;
