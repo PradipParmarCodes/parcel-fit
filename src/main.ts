@@ -893,7 +893,7 @@ function update(){
  hintButton.setAttribute('aria-label',hintButton.title);
  for(const [id,disabled]of [['rotate',selected<0||complete],['return',selected<0||!game.state[selected]||complete],['hint-button',complete||hintsLeft===0],['undo',!game.history.length],['continue',!complete||!deliveryDone]] as const)($(id) as HTMLButtonElement).disabled=disabled;
  const rewardHint=$('reward-hint') as HTMLButtonElement;
- rewardHint.hidden=complete||rewardedHintUsed||!ads.canReward||!shouldOfferRewardedHint(game.level,activeAttempt,deadEnd);
+ rewardHint.hidden=complete||rewardedHintUsed||!ads.canReward||!shouldOfferRewardedHint(game.level,activeAttempt);
  $('finish-postcard').innerHTML=newPostcard===null?'':postcardArt(newPostcard);
  $('finish-postcard').hidden=newPostcard===null;
  const finishRating=lastRunStars||bestStars[game.index]||0;
@@ -991,7 +991,7 @@ $('hint-button').onclick=()=>{
  notify(hint.returned?`Made room: ${hint.returned} box${hint.returned>1?'es':''} returned, box ${String.fromCharCode(65+selected)} placed. Undo restores your layout.`:`Hint: box ${String.fromCharCode(65+selected)} is in a good spot.`);
 };
 $('reward-hint').onclick=()=>{
- if(rewardedHintUsed||!ads.canReward||!shouldOfferRewardedHint(game.level,activeAttempt,deadEnd))return;
+ if(rewardedHintUsed||!ads.canReward||!shouldOfferRewardedHint(game.level,activeAttempt))return;
  ads.showRewarded(()=>{
   rewardedHintUsed=true;bonusHints=1;update();notify('Bonus hint unlocked.');
  });

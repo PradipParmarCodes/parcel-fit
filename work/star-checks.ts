@@ -15,6 +15,6 @@ assert.deepEqual(normalizeAttempt({placements:3,hints:-1,undos:2.5}),{...emptyAt
 assert.equal(starText(2),'★★☆');
 assert.equal(freeHintsFor(level),1,'Five-or-fewer parcel levels get one free hint');
 assert.equal(freeHintsFor({parcels:[...level.parcels,...level.parcels.slice(0,2)]}),2,'Larger levels get two free hints');
-assert(!shouldOfferRewardedHint(level,{...emptyAttempt(),hints:1},false),'Do not offer a rewarded hint before the player struggles');
-assert(shouldOfferRewardedHint(level,{...emptyAttempt(),hints:1},true),'A dead end can offer one rewarded hint');
+assert(!shouldOfferRewardedHint(level,{...emptyAttempt(),hints:0}),'Do not offer a rewarded hint before free hints are used');
+assert(shouldOfferRewardedHint(level,{...emptyAttempt(),hints:1}),'Offer one rewarded hint after free hints are used');
 console.log('PASS stars: performance tiers, assistance penalty, action summary, and save normalization');
