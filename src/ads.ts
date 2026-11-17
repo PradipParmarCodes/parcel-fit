@@ -13,7 +13,11 @@ export type AdBreakConfig = {
 
 export type AdHost = {adBreak?: (config: AdBreakConfig) => void};
 export type AdMode = 'auto' | 'off' | 'test' | 'google';
-export type NextAdContext = {firstClear: boolean;allComplete: boolean;now?: number;force?: boolean};
+export type NextAdContext = {firstClear: boolean;allComplete: boolean;completedCount?: number;now?: number;force?: boolean};
+
+/** Keep interruptions predictable: only milestone clears can open an interstitial. */
+export const firstInterstitialLevel=5;
+export const interstitialEveryLevels=5;
 
 type AdDocument = Pick<Document, 'getElementById'>;
 type AdLocation = {hostname?: string;search?: string};
@@ -44,7 +48,6 @@ export class GameAds {
  readonly mode: Exclude<AdMode, 'auto'>;
  readonly canReward: boolean;
  private active=false;
- private nextOffers=0;
  private lastNextAt=-Infinity;
 
  constructor(private options: AdsOptions={}) {
@@ -56,8 +59,8 @@ export class GameAds {
   if(this.mode==='off'||!context.firstClear||context.allComplete)return false;
   if(context.force)return true;
   if(this.mode==='test')return true;
-  this.nextOffers++;
-  if(this.nextOffers<=2||this.nextOffers%3!==0)return false;
+  const completedCount=context.completedCount??0;
+  if(completedCount<firstInterstitialLevel||completedCount%interstitialEveryLevels!==0)return false;
   const now=context.now??Date.now();
   if(now-this.lastNextAt<90_000)return false;
   this.lastNextAt=now;
@@ -91,7 +94,13 @@ export class GameAds {
   if(!adBreak){done();return;}
   this.active=true;
   let finished=false;
-  const finish=()=>{if(finished)return;finished=true;this.active=false;done();};
+  let fallbackTimer:ReturnType<typeof setTimeout>|undefined;
+  const finish=()=>{
+   if(finished)return;
+   finished=true;
+   if(fallbackTimer!==undefined)clearTimeout(fallbackTimer);
+   this.active=false;done();
+  };
   const config:AdBreakConfig={
    type,
    name:type==='next'?'level_complete':'extra_hint',
@@ -104,6 +113,8 @@ export class GameAds {
    config.adDismissed=()=>{};
    config.adViewed=onViewed;
   }
+  // A blocked provider must never trap the player behind a disabled Continue button.
+  fallbackTimer=setTimeout(finish,12_000);
   try{adBreak(config);}catch{finish();}
  }
 
@@ -153,11 +164,11 @@ export class GameAds {
    if(action)action.textContent='Continue to next delivery';
   }else if(kind==='reward-prompt'){
    if(title)title.textContent='Need one more hint?';
-   if(message)message.textContent='Watch a short ad to unlock one bonus hint. This is a test prompt.';
+   if(message)message.textContent='Watch a short ad to unlock one bonus hint.';
    if(action)action.textContent='Watch test ad';
   }else{
    if(title)title.textContent='Test rewarded advertisement';
-   if(message)message.textContent='Thanks for testing. Completing this test ad grants one bonus hint.';
+   if(message)message.textContent='Thanks for watching. Completing this ad grants one bonus hint.';
    if(action)action.textContent='Finish test ad';
   }
   dialog.dataset.adKind=kind;

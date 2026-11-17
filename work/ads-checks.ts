@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {GameAds,resolveAdMode,type AdBreakConfig} from '../src/ads';
+import {GameAds,resolveAdMode,firstInterstitialLevel,interstitialEveryLevels,type AdBreakConfig} from '../src/ads';
 
 assert.equal(resolveAdMode({location:{hostname:'example.com'}}),'off');
 assert.equal(resolveAdMode({location:{hostname:'localhost'}}),'off');
@@ -58,10 +58,11 @@ assert.equal(googleDone,1);
 const smartAds=new GameAds({mode:'google',host:{adBreak(){}}});
 assert(!smartAds.shouldShowNext({firstClear:false,allComplete:false}));
 assert(!smartAds.shouldShowNext({firstClear:true,allComplete:true}));
-assert(!smartAds.shouldShowNext({firstClear:true,allComplete:false}));
-assert(!smartAds.shouldShowNext({firstClear:true,allComplete:false}));
-assert(smartAds.shouldShowNext({firstClear:true,allComplete:false,now:100_000}));
-assert(!smartAds.shouldShowNext({firstClear:true,allComplete:false,now:100_001}),'Interstitials need a cooldown');
+assert(!smartAds.shouldShowNext({firstClear:true,allComplete:false,completedCount:firstInterstitialLevel-1}));
+assert(!smartAds.shouldShowNext({firstClear:true,allComplete:false,completedCount:firstInterstitialLevel+1}));
+assert(smartAds.shouldShowNext({firstClear:true,allComplete:false,completedCount:firstInterstitialLevel,now:100_000}));
+assert(!smartAds.shouldShowNext({firstClear:true,allComplete:false,completedCount:firstInterstitialLevel,now:100_001}),'Interstitials need a cooldown');
+assert(!smartAds.shouldShowNext({firstClear:true,allComplete:false,completedCount:firstInterstitialLevel+interstitialEveryLevels-1,now:200_000}));
 
 let fallbackDone=0;
 new GameAds({mode:'off'}).showNext(()=>fallbackDone++);

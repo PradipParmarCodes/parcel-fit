@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {levels} from '../src/engine';
 import {actionCount,emptyAttempt,normalizeAttempt,starsFor,starText} from '../src/stars';
+import {freeHintsFor,shouldOfferRewardedHint} from '../src/hints';
 
 const level=levels[0];
 const clean={...emptyAttempt(),placements:level.parcels.length};
@@ -12,4 +13,8 @@ assert.equal(starsFor(level,{...clean,restarts:2}),1,'Repeated resets lose the o
 assert.equal(actionCount({...clean,rotations:2,invalidDrops:1}),level.parcels.length+3);
 assert.deepEqual(normalizeAttempt({placements:3,hints:-1,undos:2.5}),{...emptyAttempt(),placements:3,undos:0});
 assert.equal(starText(2),'★★☆');
+assert.equal(freeHintsFor(level),1,'Five-or-fewer parcel levels get one free hint');
+assert.equal(freeHintsFor({parcels:[...level.parcels,...level.parcels.slice(0,2)]}),2,'Larger levels get two free hints');
+assert(!shouldOfferRewardedHint(level,{...emptyAttempt(),hints:1},false),'Do not offer a rewarded hint before the player struggles');
+assert(shouldOfferRewardedHint(level,{...emptyAttempt(),hints:1},true),'A dead end can offer one rewarded hint');
 console.log('PASS stars: performance tiers, assistance penalty, action summary, and save normalization');

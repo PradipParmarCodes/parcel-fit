@@ -10,6 +10,7 @@ import {fitStage} from './layout';
 import {readProgress,saveVersion,writeProgress,type Guide} from './progress';
 import {Game,levels,rotate,valid,solve,help,type Cell,type Placement} from './engine';
 import {actionCount,emptyAttempt,starText,starsFor,type AttemptStats,type StarRating} from './stars';
+import {freeHintsFor,shouldOfferRewardedHint} from './hints';
 import {createAds,type AdHost} from './ads';
 
 const game=new Game();
@@ -21,7 +22,6 @@ const hintFreeClears=restored?.hintFreeClears??levels.map(()=>false);
 const bestStars=restored?.bestStars??levels.map(()=>0);
 const attempts=restored?.attempts??levels.map(()=>emptyAttempt());
 let activeAttempt:AttemptStats=structuredClone(attempts[game.index]??emptyAttempt());
-const maxHintsPerLevel=3;
 let bonusHints=0,rewardedHintUsed=false;
 const assistedResets=new WeakSet<Placement[]>();
 if(restored){
@@ -885,14 +885,15 @@ function update(){
  $('guide-dismiss').hidden=!teaching;
  $('rotate').classList.toggle('teach',!complete&&(firstTurn||teaching&&((guide==='rotate'&&selected>=0)||(!guidedTarget&&selected>=0&&!game.state[selected]))));
  $('selection').textContent=selected<0?'':`Box ${String.fromCharCode(65+selected)}`;
- const hintsLeft=Math.max(0,maxHintsPerLevel+bonusHints-activeAttempt.hints);
+ const freeHints=freeHintsFor(game.level);
+ const hintsLeft=Math.max(0,freeHints+bonusHints-activeAttempt.hints);
  $('hint-label').textContent=hintsLeft?`Hint ${hintsLeft}`:'No hints';
  const hintButton=$('hint-button') as HTMLButtonElement;
  hintButton.title=hintsLeft?`${hintsLeft} hint${hintsLeft===1?'':'s'} left for this delivery`:'No hints left for this delivery';
  hintButton.setAttribute('aria-label',hintButton.title);
  for(const [id,disabled]of [['rotate',selected<0||complete],['return',selected<0||!game.state[selected]||complete],['hint-button',complete||hintsLeft===0],['undo',!game.history.length],['continue',!complete||!deliveryDone]] as const)($(id) as HTMLButtonElement).disabled=disabled;
  const rewardHint=$('reward-hint') as HTMLButtonElement;
- rewardHint.hidden=complete||hintsLeft>0||rewardedHintUsed||!ads.canReward;
+ rewardHint.hidden=complete||rewardedHintUsed||!ads.canReward||!shouldOfferRewardedHint(game.level,activeAttempt,deadEnd);
  $('finish-postcard').innerHTML=newPostcard===null?'':postcardArt(newPostcard);
  $('finish-postcard').hidden=newPostcard===null;
  const finishRating=lastRunStars||bestStars[game.index]||0;
@@ -979,7 +980,8 @@ function entrance(){arrivedAt=performance.now();lastRenderedAt=-Infinity;particl
 $('rotate').onclick=turn;
 $('hint-button').onclick=()=>{
  drag=null;motion=null;spin=null;
- if(activeAttempt.hints>=maxHintsPerLevel+bonusHints){notify('No hints left for this delivery. Solve the remaining boxes yourself.','error');return;}
+ const hintLimit=freeHintsFor(game.level)+bonusHints;
+ if(activeAttempt.hints>=hintLimit){notify('No hints left for this delivery. Solve the remaining boxes yourself.','error');return;}
  const before=game.state.map((_,id)=>target(id));
  const hint=help(game);
  if(!hint)return;
@@ -989,7 +991,7 @@ $('hint-button').onclick=()=>{
  notify(hint.returned?`Made room: ${hint.returned} box${hint.returned>1?'es':''} returned, box ${String.fromCharCode(65+selected)} placed. Undo restores your layout.`:`Hint: box ${String.fromCharCode(65+selected)} is in a good spot.`);
 };
 $('reward-hint').onclick=()=>{
- if(rewardedHintUsed||activeAttempt.hints<maxHintsPerLevel)return;
+ if(rewardedHintUsed||!ads.canReward||!shouldOfferRewardedHint(game.level,activeAttempt,deadEnd))return;
  ads.showRewarded(()=>{
   rewardedHintUsed=true;bonusHints=1;update();notify('Bonus hint unlocked.');
  });
@@ -1034,7 +1036,7 @@ function continueFromFinish(){
  if(adTransitioning||!deliveryDone)return;
  adTransitioning=true;($('continue') as HTMLButtonElement).disabled=true;
  const continueGame=()=>{adTransitioning=false;nextLevel();};
- ads.showNext(continueGame,{firstClear:unlockedLevel!==undefined,allComplete:completed.every(Boolean)});
+ ads.showNext(continueGame,{firstClear:unlockedLevel!==undefined,allComplete:completed.every(Boolean),completedCount:completed.filter(Boolean).length});
 }
 $('continue').onclick=continueFromFinish;$('replay').onclick=()=>$('restart').click();
 $('game-home').onclick=showHome;$('finish-home').onclick=showHome;

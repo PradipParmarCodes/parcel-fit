@@ -7,6 +7,7 @@ const html=readFileSync('index.html','utf8');
 const declaredIds=new Set([...html.matchAll(/id="([^"]+)"/g)].map(m=>m[1]));
 const native=process.env.RENDER_CANVAS?createRequire(import.meta.url)('./render-tools/node_modules/@napi-rs/canvas'):null;
 import {build} from 'esbuild';
+import {freeHintsFor} from '../src/hints';
 const result=await build({entryPoints:['src/main.ts'],bundle:true,write:false,format:'cjs',loader:{'.css':'empty'}});
 async function run(width:number,touch=false,reduced=false,height=width<761?780:820){
  let areaWidth=Math.min(1058,width-20),areaHeight=height-(height<540&&width/height>1.2?170:height<=520?233:width<761?260:300);
@@ -250,7 +251,7 @@ async function run(width:number,touch=false,reduced=false,height=width<761?780:8
  element('restart').click();assert(read('hintedAttempts[game.index]'),'Restart must not erase hint usage');
  element('undo').click();assert(read('hintedAttempts[game.index]'));
  let hints=0;while(!read('game.complete')&&hints++<10)element('hint-button').click();
- assert.equal(read('activeAttempt.hints'),3,'A delivery must have a finite hint budget');assert(element('hint-button').disabled);
+ assert.equal(read('activeAttempt.hints'),freeHintsFor(read('game.level')),'A delivery must have a finite hint budget');assert(element('hint-button').disabled);
  if(!read('game.complete'))read('game.state=structuredClone(game.level.solution);activeAttempt.placements=game.level.parcels.length;lastComplete=false;update()');
  assert(read('game.complete'));assert.match(element('finish-message').textContent,/Level 2 unlocked/);
  assert(!read('hintFreeClears[game.index]'));
