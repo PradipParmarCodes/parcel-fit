@@ -52,15 +52,17 @@ assert.deepEqual(mapRoadPose(-1),mapStart);
 assert.deepEqual(mapRoadPose(NaN),mapStart);
 assert.deepEqual(mapRoadPose(Infinity),mapEnd);
 assert.equal(mapRoad.match(/M/g)?.length,1,'The visible road must be one continuous path');
-assert.equal(mapStops.length,60);
-assert.equal(new Set(mapRegions.map(region=>region.name)).size,10);
+assert.equal(mapStops.length,70);
+assert.equal(new Set(mapRegions.map(region=>region.name)).size,11);
 assert.equal(mapRegions[0].y,0);
 let previousStopY=0,previousStopDistance=0;
+const regionStopCounts=[6,6,6,6,6,6,6,6,6,10,6];
+let stopCursor=0;
 for (const [regionIndex, region] of mapRegions.entries()) {
   const nextBoundary=mapRegions[regionIndex+1]?.y??mapHeight;
   assert.equal(region.y+region.height,nextBoundary,'Village regions must cover the world without skipped stretches');
   assert(region.labelX>0&&region.labelX<mapWidth&&region.labelY>region.y&&region.labelY<nextBoundary);
-  for (const stop of mapStops.slice(regionIndex*6,(regionIndex+1)*6)) {
+  for (const stop of mapStops.slice(stopCursor,stopCursor+regionStopCounts[regionIndex])) {
     const { x, y, distance }=stop;
     assert(distance>previousStopDistance&&y-previousStopY>=60.99);
     assert(x>0&&x<mapWidth&&y>region.y&&y<nextBoundary);
@@ -69,7 +71,9 @@ for (const [regionIndex, region] of mapRegions.entries()) {
     previousStopDistance=distance;
     previousStopY=y;
   }
+  stopCursor+=regionStopCounts[regionIndex];
 }
+assert.equal(stopCursor,mapStops.length);
 
 let lastPose=mapStart,minAngle=180,maxAngle=0;
 for (let distance=1;distance<=mapRoadLength;distance++) {
@@ -83,4 +87,4 @@ for (let distance=1;distance<=mapRoadLength;distance++) {
   lastPose=pose;
 }
 assert(minAngle<45&&maxAngle>135,'The road must wind in both directions');
-console.log('PASS world road: 60 ordered stops across 10 contiguous villages, smooth truck motion, and clamped endpoints');
+console.log('PASS world road: 70 ordered stops across 11 contiguous villages, smooth truck motion, and clamped endpoints');

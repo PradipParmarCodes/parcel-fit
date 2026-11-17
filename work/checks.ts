@@ -4,7 +4,7 @@ import {levelSpecs} from '../src/levels';
 import {difficultyOrder,deliveryNumber,nextDelivery,difficultyOf,firstUnsolved,canPlayLevel} from '../src/difficulty';
 import {routes} from '../src/routes';
 
-assert.equal(levels.length,60);
+assert.equal(levels.length,70);
 assert.equal(new Set(difficultyOrder).size,levels.length);
 assert.deepEqual([...difficultyOrder].sort((a,b)=>a-b),levels.map((_,index)=>index));
 assert.equal(difficultyOrder[0],0);

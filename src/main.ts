@@ -656,9 +656,10 @@ const postcardLandmarks:Record<string,string>={
  orchard:'<path d="M22 46V67M52 46V67" stroke="#8a6651" stroke-width="4"/><circle cx="22" cy="37" r="15" fill="#be8152"/><circle cx="52" cy="43" r="13" fill="#b48757"/><path d="M14 39h5m11-6h4m13 13h5m5-9h4" stroke="#9f4d39" stroke-width="4" stroke-linecap="round"/>',
  canal:'<path d="M0 63Q70 35 150 57V70H0Z" fill="#a8c8c8"/><path d="M80 54H129L119 62H91Z" fill="#738d77"/><path d="M98 40H116V54H98Z" fill="#f9e3ac"/>',
  lighthouse:'<path d="M102 65L107 24H119L126 65Z" fill="#f9dea8"/><path d="M105 40H121L124 51H104Z" fill="#b36d57"/><path d="M104 16H122V25H104Z" fill="#6c667c"/><path d="M102 16L113 7L125 16Z" fill="#7b6278"/><path d="M121 19L147 11V32L121 23Z" fill="#f6e7b28c"/>',
+ aurora:'<path d="M0 55Q35 19 70 47T150 35V76H0Z" fill="#6d9c9e"/><path d="M8 28Q34 5 60 25T116 19" fill="none" stroke="#d5f3cb" stroke-width="5" opacity=".75"/><path d="M96 63V39L113 27L132 40V63Z" fill="#8fc6b6"/><path d="M106 47H114V63H106Z" fill="#496b80"/>',
 };
 function postcardArt(index:number){
- const route=routes[index],night=route.theme==='night'||route.theme==='lighthouse';
+ const route=routes[index],night=route.theme==='night'||route.theme==='lighthouse'||route.theme==='aurora';
  return `<svg viewBox="0 0 150 76" aria-hidden="true"><rect width="150" height="76" fill="${route.sky}"/><circle cx="116" cy="17" r="11" fill="${night?'#fff0c5':'#f3cd90'}"/><path d="M0 55Q44 26 79 56Q116 34 150 51V76H0Z" fill="${route.hill}"/>${postcardLandmarks[route.theme]}<path d="M0 65H150V76H0Z" fill="${route.grass}"/><rect x="46" y="43" width="39" height="22" rx="3" fill="${route.frame}"/><path d="M85 50H96L103 58V65H85Z" fill="${route.cab}"/><rect x="49" y="47" width="30" height="13" rx="1" fill="#efdfb4"/><circle cx="55" cy="66" r="5" fill="#465b50"/><circle cx="94" cy="66" r="5" fill="#465b50"/></svg>`;
 }
 function openAlbum(){

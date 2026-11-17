@@ -22,7 +22,7 @@ async function run(width:number,touch=false,reduced=false,height=width<761?780:8
  let now=1000;
  let lastFrame:FrameRequestCallback;
  const mapSheet=element('world-map-sheet'),mapTruck={style:{transform:''}};
- const mapHeight=4160;
+ const mapHeight=5200;
  const mapNodes:Record<string,unknown>={'.world-map':{clientWidth:width,clientHeight:mapHeight},'.world-map-truck':mapTruck,'.world-main-road-travelled':{setAttribute(){}}};
  mapSheet.clientHeight=Math.min(height-90,680);
  const mapStyles=new Map<string,string>();
@@ -90,8 +90,8 @@ async function run(width:number,touch=false,reduced=false,height=width<761?780:8
  element('settings-close').click();assert(!element('settings-dialog').open);
  // Level 1 is centered near the route's bottom, and every later stop is uphill.
  element('home-map').click();assertMapFocus(0);
- const stopPositions=Array.from({length:60},(_,ordinal)=>stopY(ordinal));
- assert(stopPositions[0]>90&&stopPositions[59]<10);
+ const stopPositions=Array.from({length:70},(_,ordinal)=>stopY(ordinal));
+ assert(stopPositions[0]>90&&stopPositions[69]<10);
  assert(stopPositions.slice(1).every((y,index)=>y<stopPositions[index]));
  assert(mapPadding('bottom')>0,'Level 1 needs map below the route to center the truck');
  mapSheet.scrollTop=0;
@@ -135,9 +135,9 @@ async function run(width:number,touch=false,reduced=false,height=width<761?780:8
  const totalLevels=read('levels.length');
  for(let level=0;level<totalLevels;level++){
  if(level===totalLevels-1){
-  element('game-home').click();assert.equal(element('home-level-label').textContent,'Level 60');
+  element('game-home').click();assert.equal(element('home-level-label').textContent,'Level 70');
   element('home-map').click();assertMapFocus(level);
-  assert(mapPadding('top')>0,'Level 60 needs map above the route to center the truck');
+  assert(mapPadding('top')>0,'Level 70 needs map above the route to center the truck');
   mapSheet.scrollTop=mapSheet.scrollHeight;
   element('map-recenter').click();assertTruckCentered();
   element('map-close').click();element('home-play').click();
@@ -185,10 +185,10 @@ async function run(width:number,touch=false,reduced=false,height=width<761?780:8
  }else assert.equal(element('continue').disabled,false);
  }
  // Postcards remain collected on replay.
- assert.equal(read('earnedPostcards().filter(Boolean).length'),10);
+ assert.equal(read('earnedPostcards().filter(Boolean).length'),11);
  element('continue').click();if(!reduced)await finishDrive('down');assert.equal(read('game.index'),0);assert(read('game.state.every(p=>p===null)'));assert.equal(read('completed.filter(Boolean).length'),totalLevels);
  element('game-home').click();element('open-album').click();
- assert(element('album-dialog').open);assert(element('next-postcard').hidden);assert.equal((element('postcards').innerHTML.match(/postcard delivered/g)||[]).length,10);element('album-close').click();
+ assert(element('album-dialog').open);assert(element('next-postcard').hidden);assert.equal((element('postcards').innerHTML.match(/postcard delivered/g)||[]).length,11);element('album-close').click();
  element('open-achievements').click();assert(element('achievements-dialog').open);assert.equal(element('achievements-summary').textContent,'8 of 8 earned');element('achievements-close').click();
  element('home-play').click();
  // Fixed cargo responds with an explanation and cannot become a dragged box.
@@ -209,7 +209,7 @@ async function run(width:number,touch=false,reduced=false,height=width<761?780:8
  // Home has one continuous map of all stops and a separate filterable level list.
  element('game-home').click();element('home-map').click();
  assert(element('world-map-dialog').open);
- assert.equal((mapSheet.innerHTML.match(/data-world-stop=/g)||[]).length,60);
+ assert.equal((mapSheet.innerHTML.match(/data-world-stop=/g)||[]).length,70);
  assert.match(mapSheet.innerHTML,/Maple Depot/);
  assert.match(mapSheet.innerHTML,/Beacon Bay/);
  assert.match(mapSheet.innerHTML,/data-world-stop="0"[^>]*aria-current="step"/);
@@ -240,11 +240,11 @@ async function run(width:number,touch=false,reduced=false,height=width<761?780:8
  const rawSave=storage.get('parcel-fit-progress-v1');assert(rawSave);assert.equal(JSON.parse(rawSave).index,3);
  const beforeResize=read('JSON.stringify(game.state)');render();{const r=read('tray(0)');pointer('pointerdown',r.x+r.s/2,r.y+r.s/2);pointer('pointermove',r.x+r.s/2+20,r.y+r.s/2-20);assert(read('drag!==null'));}[areaWidth,areaHeight]=[areaHeight+120,areaWidth/2];read('resize();refreshGuide()');assert.equal(read('JSON.stringify(game.state)'),beforeResize);assert(read('drag===null'));render();
  // An old completion record cannot bypass the first unsolved delivery.
- read('completed=levels.map(()=>false);packings=levels.map(l=>l.parcels.map(()=>null));completed[59]=true;hintFreeClears.fill(false);hintedAttempts.fill(false);game.restart();switchLevel(0)');
+ read('completed=levels.map(()=>false);packings=levels.map(l=>l.parcels.map(()=>null));completed[69]=true;hintFreeClears.fill(false);hintedAttempts.fill(false);game.restart();switchLevel(0)');
 
  element('game-home').click();element('home-map').click();
- assert.match(mapSheet.innerHTML,/data-world-stop="59" disabled/);
- listeners.get('world-map-sheet:click')!({target:{closest:()=>({dataset:{worldStop:'59'},disabled:false})}});
+ assert.match(mapSheet.innerHTML,/data-world-stop="69" disabled/);
+ listeners.get('world-map-sheet:click')!({target:{closest:()=>({dataset:{worldStop:'69'},disabled:false})}});
  assert.equal(read('game.index'),0);assert(element('world-map-dialog').open);
  element('map-close').click();element('home-play').click();
  element('hint-button').click();assert(read('hintedAttempts[game.index]'));
@@ -270,6 +270,6 @@ async function run(width:number,touch=false,reduced=false,height=width<761?780:8
  pointer('pointerdown',tb.x+(taught.p.x+lastCell[0]+.5)*tb.s,tb.y+(taught.p.y+lastCell[1]+.5)*tb.s);pointer('pointerup',tb.x+(taught.p.x+lastCell[0]+.5)*tb.s,tb.y+(taught.p.y+lastCell[1]+.5)*tb.s);assert(read(`game.state[${taught.id}]!==null`));assert.equal(read('game.state.filter(Boolean).length'),1);
  // A reload restores the final active level and its unfinished packing.
  const lastIndex=read('game.index'),lastState=read('JSON.stringify(game.state)');const reload=vm.createContext({...env});vm.runInContext(result.outputFiles[0].text,reload);assert.equal(vm.runInContext('game.index',reload),lastIndex);assert.equal(vm.runInContext('JSON.stringify(game.state)',reload),lastState);
- console.log(`PASS ${touch?'touch':'mouse'} UI (${width}×${height}${reduced?', reduced motion':''}): home, settings, centered bottom-to-top map travel, resume and recenter, selection, rotation, drag, overlap rejection, tray return, undo, restart, tap-to-place, all sixty completions, rightward drive-off, next delivery, blocked-layout hint and undo, guide, help, postcard milestones, replay without lost stamps, autosave, reload and resize`);
+ console.log(`PASS ${touch?'touch':'mouse'} UI (${width}×${height}${reduced?', reduced motion':''}): home, settings, centered bottom-to-top map travel, resume and recenter, selection, rotation, drag, overlap rejection, tray return, undo, restart, tap-to-place, all seventy completions, rightward drive-off, next delivery, blocked-layout hint and undo, guide, help, postcard milestones, replay without lost stamps, autosave, reload and resize`);
 }
 await run(1200);await run(390,true);await run(320,true,false,568);await run(320,true,false,420);await run(844,true,false,390);await run(390,true,true);

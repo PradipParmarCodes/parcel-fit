@@ -1,7 +1,7 @@
 export const mapWidth = 620;
-export const mapHeight = 4160;
+export const mapHeight = 5200;
 
-const regionBoundaries = [0, 412, 835, 1248, 1648, 2078, 2485, 2893, 3318, 3725, mapHeight];
+const regionBoundaries = [0, 412, 835, 1248, 1648, 2078, 2485, 2893, 3318, 3725, 4550, mapHeight];
 const towns = [
   { name: 'Maple Depot', labelX: 426, labelY: 87 },
   { name: 'Cloverhill', labelX: 464, labelY: 519 },
@@ -13,6 +13,7 @@ const towns = [
   { name: 'Bramley', labelX: 171, labelY: 3011 },
   { name: 'Willow Lock', labelX: 444, labelY: 3400 },
   { name: 'Beacon Bay', labelX: 498, labelY: 3890 },
+  { name: 'Aurora Reach', labelX: 178, labelY: 4810 },
 ];
 
 export const mapRegions = towns.map((town, index) => ({
@@ -33,6 +34,9 @@ const waypoints = [
   [254, 3148], [179, 3260], [198, 3342], [171, 3430], [225, 3544],
   [370, 3637], [444, 3714], [378, 3790], [287, 3850], [204, 3927],
   [242, 3993], [365, 4067], [438, 4134],
+  [389, 4218], [286, 4304], [224, 4390], [279, 4478], [402, 4567],
+  [478, 4655], [416, 4745], [302, 4836], [205, 4925], [246, 5016],
+  [365, 5105], [449, 5188],
 ] as const;
 
 function slopeAt(index: number): number {
@@ -104,8 +108,13 @@ export function mapDistanceAtY(y: number): number {
 }
 
 const stopOffsets = [67, 128, 191, 252, 315, 377];
-export const mapStops = mapRegions.flatMap(({ y: north }) => stopOffsets.map(offset => {
+const beaconBayOffsets = [...stopOffsets, 450, 530, 610, 690];
+const auroraReachOffsets = [...stopOffsets.slice(0, 5), 627];
+export const mapStops = mapRegions.flatMap(({ y: north }, regionIndex) => {
+ const offsets = regionIndex===9?beaconBayOffsets:regionIndex===10?auroraReachOffsets:stopOffsets;
+ return offsets.map(offset => {
   const distance = mapDistanceAtY(north + offset);
   const { x, y } = mapRoadPose(distance);
   return { x, y, distance, side: x > mapWidth / 2 ? 'left' as const : 'right' as const };
-}));
+ });
+});

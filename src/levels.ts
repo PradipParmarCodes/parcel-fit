@@ -4,7 +4,7 @@ export type LevelSpec = {
   turns: number[];
   description: string;
   layoutVersion?: number;
-  theme: 'depot' | 'garden' | 'harbor' | 'sunset' | 'alpine' | 'night' | 'orchard' | 'canal' | 'lighthouse';
+  theme: 'depot' | 'garden' | 'harbor' | 'sunset' | 'alpine' | 'night' | 'orchard' | 'canal' | 'lighthouse' | 'aurora';
   chapter: string;
 };
 
@@ -292,6 +292,16 @@ export const levelSpecs: LevelSpec[] = [
   {"name":"All lights lit","rows":["ABBBBC","A#BCCC","AAADCE","FFFD#E","FFDDDD"],"turns":[3,0,2,3,0,0],"description":"Think carefully about the little gaps between the large parcels.","theme":"lighthouse","chapter":"Lighthouse Point"},
   {"name":"Home before dawn","rows":["AABBBC","ABBCCC","AA#CDD","EEECDF","EEEFFF"],"turns":[0,1,1,3,1,3],"description":"Find a home for one large parcel, then work outward.","theme":"lighthouse","chapter":"Lighthouse Point"},
   {"name":"The final beacon","rows":["AABBBB","AAAACC","DCCCC#","DDDDEE","DFFEEE"],"turns":[2,1,0,2,3,3],"description":"Start with the least flexible shape. Leave a small pocket for the last parcel.","theme":"lighthouse","chapter":"Lighthouse Point"},
+  {"name":"Aurora gate","rows":["AAABBC","ADDBBC","ADDEEC","FFFEEC"],"turns":[1,2,0,3,1,2],"description":"The northern route begins with a clean corner and a long glowing lane.","theme":"aurora","chapter":"Aurora Post"},
+  {"name":"Icebound sorting","rows":["AAABB","AC#BB","ACDDD","EEED#","EEEDD"],"turns":[2,1,3,0,2],"description":"Work around two frozen markers before the wide parcels close the bay.","theme":"aurora","chapter":"Aurora Post"},
+  {"name":"Polar switchyard","rows":["AABBCC#","AABBCDD","FFFEEDD","FFFEEDD"],"turns":[0,3,1,2,1,0],"description":"A broad yard rewards placing the small parcels before the heavy blocks.","theme":"aurora","chapter":"Aurora Post"},
+  {"name":"Blue-hour bolts","rows":["AA#BC","A#BBC","DDDBC","DEEEE","DD#EE"],"turns":[3,0,2,1,3],"description":"Two bolts turn an ordinary bay into a careful chain of pockets.","theme":"aurora","chapter":"Aurora Post"},
+  {"name":"Frostline freight","rows":["AAAABC","DDBBBC","DDBFFC","DDBFFC","EEEECC"],"turns":[1,0,2,3,1,2],"description":"Keep the lower shelf open while the square parcels settle into place.","theme":"aurora","chapter":"Aurora Post"},
+  {"name":"Northern lights lane","rows":["AABBCD","ABBBCD","AFFEED","AFFEED"],"turns":[2,1,0,3,2,1],"description":"A simple-looking lane hides a satisfying pair of interlocking turns.","theme":"aurora","chapter":"Aurora Post"},
+  {"name":"Aurora lockbox","rows":["AABBC","ADBBC","ADDEC","FFDEC","FFEEE"],"turns":[0,2,1,3,1,0],"description":"Leave the narrow middle open until the hooked parcels are aligned.","theme":"aurora","chapter":"Aurora Post"},
+  {"name":"Skybridge crates","rows":["AAA#BC","DDAEBC","DDAEEC","DDFEEC","FFFFEC"],"turns":[3,1,0,2,1,3],"description":"A fixed roof beam divides the bay, but every parcel still has a path home.","theme":"aurora","chapter":"Aurora Post"},
+  {"name":"Glacier crossroads","rows":["AABBCC","ADDBBC","ADEEBF","DDEEFF","DEEFFF"],"turns":[2,3,1,0,2,1],"description":"Place the broad centre pieces first, then close the four-way crossing.","theme":"aurora","chapter":"Aurora Post"},
+  {"name":"The aurora run","rows":["AAABBC","ADDBBC","ADDEEC","FFDEEC","FFFFEC"],"turns":[0,1,2,3,1,2],"description":"The final delivery is a calm, precise fit beneath the northern sky.","theme":"aurora","chapter":"Aurora Post"},
 ];
 
 // Published levels keep their save indexes. This list is their play order.
@@ -302,4 +312,5 @@ export const difficultyOrder = [
   12, 8, 46, 44, 41, 51, 54, 53, 49, 3,
   21, 47, 10, 17, 48, 18, 55, 56, 27, 24,
   9, 11, 57, 14, 19, 58, 13, 28, 29, 59,
+  60, 61, 62, 63, 64, 65, 66, 67, 68, 69,
 ] as const;

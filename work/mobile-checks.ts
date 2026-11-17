@@ -75,5 +75,5 @@ assert(achievementProgress(allCleared,allCleared).every(item=>item.earned));
 for(const raw of [null,'','null','[]','{bad','{}',JSON.stringify({...progress,index:levels.length}),JSON.stringify({...progress,state:[{x:-1,y:0,r:0},null,null,null]}),JSON.stringify({...progress,state:[{x:0,y:0,r:8},null,null,null]}),JSON.stringify({...progress,state:[g.state[0],g.state[0],null,null]})])assert.equal(decodeProgress(raw),null);
 const store=new Map<string,string>();Object.defineProperty(globalThis,'localStorage',{configurable:true,value:{getItem:(k:string)=>store.get(k)??null,setItem:(k:string,v:string)=>store.set(k,v)}});writeProgress(progress);assert.deepEqual(readProgress()?.state,g.state);
 Object.defineProperty(globalThis,'localStorage',{configurable:true,get(){throw new Error('Storage denied');}});assert.equal(readProgress(),null);assert.doesNotThrow(()=>writeProgress(progress));
-console.log(`PASS ${checked} fitted layouts: portrait, short phones, landscape, tablets, all sixty levels, visible nonoverlapping 44px tray targets`);
+console.log(`PASS ${checked} fitted layouts: portrait, short phones, landscape, tablets, all seventy levels, visible nonoverlapping 44px tray targets`);
 console.log('PASS progress: legacy and revised-puzzle migration, completion and postcards preserved, round trip, invalid saves rejected, storage-disabled fallback');

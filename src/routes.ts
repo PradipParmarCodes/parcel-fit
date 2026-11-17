@@ -8,5 +8,6 @@ export const routes=[
  {name:'Sorting School',theme:'depot',summary:'Short lessons for rotation and fixed cargo',sky:'#d9eee6',horizon:'#f2f4dc',hill:'#c6d9b7',tree:'#a3c49c',frame:'#398f7a',roof:'#83bba1',cab:'#4b9c83',door:'#63aa8c',grass:'#b9cca0'},
  {name:'Orchard Lane',theme:'orchard',summary:'Crates, shelves and autumn lanes',sky:'#f8dbc2',horizon:'#fff0cc',hill:'#e2ae78',tree:'#b77558',frame:'#aa6549',roof:'#e0a472',cab:'#c77d56',door:'#e1a577',grass:'#c6bf87'},
  {name:'Canal Crossing',theme:'canal',summary:'Long bays and narrow locks',sky:'#cfe8e8',horizon:'#f4f0d7',hill:'#b0cbbc',tree:'#79a99b',frame:'#317b7b',roof:'#8fbdaf',cab:'#56928d',door:'#79aea2',grass:'#a1c0a8'},
- {name:'Lighthouse Point',theme:'lighthouse',summary:'Tight pockets and interlocking finales',sky:'#9aaad1',horizon:'#eed6bd',hill:'#b3b4c9',tree:'#8f9eab',frame:'#6e6490',roof:'#c0afce',cab:'#9284ad',door:'#af9ebf',grass:'#a7acae'}
+ {name:'Lighthouse Point',theme:'lighthouse',summary:'Tight pockets and interlocking finales',sky:'#9aaad1',horizon:'#eed6bd',hill:'#b3b4c9',tree:'#8f9eab',frame:'#6e6490',roof:'#c0afce',cab:'#9284ad',door:'#af9ebf',grass:'#a7acae'},
+ {name:'Aurora Post',theme:'aurora',summary:'Glowing skies, split bays, and final-mile mastery',sky:'#415c83',horizon:'#b9d8ca',hill:'#607c9f',tree:'#6e9a9b',frame:'#486d87',roof:'#9bc8bd',cab:'#6ca696',door:'#8ac0ad',grass:'#83a99b'}
 ] as const;
