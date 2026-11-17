@@ -485,7 +485,6 @@ canvas:active { cursor: grabbing; }
 .ad-test-card h2 { margin: 13px 0 8px; font-size: 22px; }
 .ad-test-card p { margin: 0 auto 19px; color: #526251; font-size: 13px; line-height: 1.45; }
 .ad-test-card .game-button { min-width: 210px; }
-.reward-hint { grid-column: 1 / -1; min-height: 38px !important; }
 .game-dialog h2 { margin: 2px 45px 15px 0; font-size: 23px; letter-spacing: -.03em; }
 .game-dialog.achievements-dialog { width: min(575px, calc(100% - 20px)); padding: clamp(13px, 4vw, 21px); }
 .achievements-progress { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 12px; margin-bottom: 13px; }

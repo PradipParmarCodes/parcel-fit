@@ -210,9 +210,13 @@ function parcel(id:number,shape:Cell[],rect:Rect,options:{ghost?:boolean;ok?:boo
  const [lx,ly]=shape[0],labelX=x+lx*s+s*.09,labelY=y+ly*s+s*.17;
  if(!options.ghost){
  rounded(labelX+1,labelY+2,s*.79,s*.58,3,'#76502e3b');
- rounded(labelX,labelY,s*.79,s*.58,3,'#fffaf0','#9d794d');text(String.fromCharCode(65+id),labelX+s*.11,labelY+s*.40,s*.37,'#42311e','left',true);
- if(s>=24)for(let i=0;i<7;i++)ctx.fillRect(labelX+s*(.47+i*.034),labelY+s*.14,(i%2+1)*s*.012,s*.23);
- if(s>38){text('↑↑',labelX+s*.50,labelY+s*.50,s*.10,'#735632');}
+  rounded(labelX,labelY,s*.79,s*.58,3,'#fffaf0','#9d794d');
+  if(s>=14){
+   ctx.save();ctx.fillStyle='#594632';
+   const bars=[.08,.14,.20,.28,.34,.43,.49,.58,.64,.72];
+   for(const [index,offset] of bars.entries())ctx.fillRect(labelX+s*offset,labelY+s*.12,s*(index%3===0?.026:.014),s*.28);
+   ctx.fillStyle='#b28b5b';ctx.fillRect(labelX+s*.08,labelY+s*.45,s*.52,s*.045);ctx.restore();
+  }
  const [endX,endY]=shape[shape.length-1],sx=x+(endX+.72)*s,sy=y+(endY+.77)*s;
  ctx.save();ctx.translate(sx,sy);ctx.rotate(-.12);ctx.strokeStyle='#926e4366';ctx.lineWidth=Math.max(1,s*.018);
  if(id%3===0){ctx.beginPath();ctx.moveTo(-s*.08,-s*.05);ctx.bezierCurveTo(-s*.15,-s*.14,-s*.2,s*.02,0,s*.1);ctx.bezierCurveTo(s*.2,s*.02,s*.15,-s*.14,0,-s*.05);ctx.stroke();}
@@ -887,14 +891,15 @@ function update(){
  $('rotate').classList.toggle('teach',!complete&&(firstTurn||teaching&&((guide==='rotate'&&selected>=0)||(!guidedTarget&&selected>=0&&!game.state[selected]))));
  $('selection').textContent=selected<0?'':`Box ${String.fromCharCode(65+selected)}`;
  const freeHints=freeHintsFor(game.level);
- const hintsLeft=Math.max(0,freeHints+bonusHints-activeAttempt.hints);
- $('hint-label').textContent=hintsLeft?`Hint ${hintsLeft}`:'No hints';
+ const rewardUsed=rewardedHintUsed||activeAttempt.hints>freeHints;
+ const availableBonus=rewardUsed?1:bonusHints;
+ const hintsLeft=Math.max(0,freeHints+availableBonus-activeAttempt.hints);
+ const canWatchReward=ads.canReward&&!rewardUsed&&shouldOfferRewardedHint(game.level,activeAttempt);
+ $('hint-label').textContent=hintsLeft?`Hint ${hintsLeft}`:canWatchReward?'Watch ad · +1':'No hints';
  const hintButton=$('hint-button') as HTMLButtonElement;
- hintButton.title=hintsLeft?`${hintsLeft} hint${hintsLeft===1?'':'s'} left for this delivery`:'No hints left for this delivery';
+ hintButton.title=hintsLeft?`${hintsLeft} hint${hintsLeft===1?'':'s'} left for this delivery`:canWatchReward?'Watch a short ad for one bonus hint':'No hints left for this delivery';
  hintButton.setAttribute('aria-label',hintButton.title);
- for(const [id,disabled]of [['rotate',selected<0||complete],['return',selected<0||!game.state[selected]||complete],['hint-button',complete||hintsLeft===0],['undo',!game.history.length],['continue',!complete||!deliveryDone]] as const)($(id) as HTMLButtonElement).disabled=disabled;
- const rewardHint=$('reward-hint') as HTMLButtonElement;
- rewardHint.hidden=complete||rewardedHintUsed||!ads.canReward||!shouldOfferRewardedHint(game.level,activeAttempt);
+ for(const [id,disabled]of [['rotate',selected<0||complete],['return',selected<0||!game.state[selected]||complete],['hint-button',complete||(hintsLeft===0&&!canWatchReward)],['undo',!game.history.length],['continue',!complete||!deliveryDone]] as const)($(id) as HTMLButtonElement).disabled=disabled;
  $('finish-postcard').innerHTML=newPostcard===null?'':postcardArt(newPostcard);
  $('finish-postcard').hidden=newPostcard===null;
  const finishRating=lastRunStars||bestStars[game.index]||0;
@@ -979,22 +984,25 @@ function turn(){
 }
 function entrance(){arrivedAt=performance.now();lastRenderedAt=-Infinity;particles=[];rowWaves=[];landingRings=[];sparks=null;loadedPulse=0;departedSound=false;stampPlayed=false;}
 $('rotate').onclick=turn;
-$('hint-button').onclick=()=>{
- drag=null;motion=null;spin=null;
- const hintLimit=freeHintsFor(game.level)+bonusHints;
- if(activeAttempt.hints>=hintLimit){notify('No hints left for this delivery. Solve the remaining boxes yourself.','error');return;}
+function useHint(label='Hint'){
  const before=game.state.map((_,id)=>target(id));
  const hint=help(game);
- if(!hint)return;
+ if(!hint){notify('No useful hint is available yet. Try Undo or rearrange a parcel.','error');return false;}
  activeAttempt.hints++;
  hintedAttempts[game.index]=true;
  guide='done';guideKey='';selected=hint.placed;rotation=game.state[selected]!.r;animate(selected,before[selected],'snap');update();
- notify(hint.returned?`Made room: ${hint.returned} box${hint.returned>1?'es':''} returned, box ${String.fromCharCode(65+selected)} placed. Undo restores your layout.`:`Hint: box ${String.fromCharCode(65+selected)} is in a good spot.`);
-};
-$('reward-hint').onclick=()=>{
- if(rewardedHintUsed||!ads.canReward||!shouldOfferRewardedHint(game.level,activeAttempt))return;
+ notify(hint.returned?`${label}: made room, returned ${hint.returned} box${hint.returned>1?'es':''}, and placed a parcel. Undo restores your layout.`:`${label}: a parcel is in a good spot.`);
+ return true;
+}
+$('hint-button').onclick=()=>{
+ drag=null;motion=null;spin=null;
+ const freeLimit=freeHintsFor(game.level),rewardUsed=rewardedHintUsed||activeAttempt.hints>freeLimit;
+ const hintLimit=freeLimit+(rewardUsed?1:bonusHints);
+ if(activeAttempt.hints<hintLimit){useHint();return;}
+ if(rewardUsed||!ads.canReward){notify('No hints left for this delivery. Solve the remaining boxes yourself.','error');return;}
  ads.showRewarded(()=>{
-  rewardedHintUsed=true;bonusHints=1;update();notify('Bonus hint unlocked.');
+  rewardedHintUsed=true;bonusHints=1;
+  useHint('Bonus hint');
  });
 };
  $('return').onclick=()=>{if(selected>=0&&game.state[selected]){const from=target(selected);if(game.set(selected,null)){activeAttempt.returns++;animate(selected,from,'return');notify('Parcel returned to the tray.');}}drag=null;update();};
