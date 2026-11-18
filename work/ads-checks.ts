@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {GameAds,resolveAdMode,firstInterstitialLevel,interstitialEveryLevels,type AdBreakConfig} from '../src/ads';
+import {GameAds,resolveAdMode,firstInterstitialLevel,interstitialEveryLevels,type AdBreakConfig,type AdHost} from '../src/ads';
 
 assert.equal(resolveAdMode({location:{hostname:'example.com'}}),'off');
 assert.equal(resolveAdMode({location:{hostname:'localhost'}}),'off');
@@ -54,6 +54,12 @@ config?.beforeAd?.();config?.afterAd?.();config?.adBreakDone?.();
 assert.equal(googlePaused,1);
 assert.equal(googleResumed,1);
 assert.equal(googleDone,1);
+
+const lateHost:AdHost={};
+const lateAds=new GameAds({host:lateHost,location:{hostname:'example.com'}});
+assert(!lateAds.canReward,'Rewarded hints should wait for the ad provider to load');
+lateHost.adBreak=()=>{};
+assert(lateAds.canReward,'Rewarded hints should become available when the provider loads later');
 
 const smartAds=new GameAds({mode:'google',host:{adBreak(){}}});
 assert(!smartAds.shouldShowNext({firstClear:false,allComplete:false}));

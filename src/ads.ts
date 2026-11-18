@@ -46,13 +46,15 @@ export function resolveAdMode(options: Pick<AdsOptions, 'host'|'location'|'mode'
  */
 export class GameAds {
  readonly mode: Exclude<AdMode, 'auto'>;
- readonly canReward: boolean;
  private active=false;
  private lastNextAt=-Infinity;
 
  constructor(private options: AdsOptions={}) {
   this.mode=resolveAdMode(options);
-  this.canReward=this.mode==='test'||this.mode==='google';
+ }
+
+ get canReward(): boolean {
+  return this.mode==='test'||this.mode==='google'||this.lateGoogleHost();
  }
 
  shouldShowNext(context:NextAdContext): boolean {
@@ -78,7 +80,7 @@ export class GameAds {
 
  private show(type:AdPlacement,onViewed:()=>void,done:()=>void): void {
   if(this.active)return;
-  if(this.mode==='google'&&this.options.host?.adBreak){
+  if((this.mode==='google'||this.lateGoogleHost())&&this.options.host?.adBreak){
    this.showGoogle(type,onViewed,done);
    return;
   }
@@ -87,6 +89,12 @@ export class GameAds {
    return;
   }
   done();
+ }
+
+ private lateGoogleHost(): boolean {
+  return this.options.mode===undefined&&
+   !this.options.location?.search?.includes('ads=off')&&
+   typeof this.options.host?.adBreak==='function';
  }
 
  private showGoogle(type:AdPlacement,onViewed:()=>void,done:()=>void): void {

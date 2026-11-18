@@ -268,6 +268,8 @@ button:focus-visible, a:focus-visible, select:focus-visible, canvas:focus-visibl
   min-height: 32px;
   font-size: 12px;
 }
+/* Keep status available to assistive technology without adding visual noise. */
+.instruction { visibility: hidden; min-height: 0; height: 0; padding: 0; overflow: hidden; pointer-events: none; }
 #guide-dismiss { padding: 4px 8px; border: 0; border-radius: 5px; background: #efe3c5; color: #513b23; font-weight: 700; }
 .canvaswrap { flex: 1; min-height: 0; position: relative; overflow: hidden; background: #dce9d6; contain: layout paint; }
 canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; user-select: none; cursor: grab; }
@@ -323,6 +325,7 @@ canvas:active { cursor: grabbing; }
 }
 .feedback.show { opacity: 1; transform: translate(-50%, 0); }
 .feedback.error { color: #793b2c; background: #fff1e7; }
+.feedback { display: none; }
 
 .finish {
   width: min(340px, calc(100% - 32px));
@@ -654,8 +657,6 @@ canvas:active { cursor: grabbing; }
   .level-picker-header { padding-inline: 10px; }
 }
 @media (max-height: 410px) {
-  /* Keep the guide row reserved so showing a message cannot resize the board. */
-  .instruction[hidden] { display: flex !important; visibility: hidden; }
   .level-picker-header { padding-block: 8px; }
   .level-picker-header h2 { font-size: 21px; }
   .route-summary { margin-bottom: 6px; }
