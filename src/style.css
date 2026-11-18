@@ -172,6 +172,15 @@ button:focus-visible, a:focus-visible, select:focus-visible, canvas:focus-visibl
 .home-ad-label { display: none; }
 #container-9dedbeb1a7039a5b63a52d317c3a8904 { min-height: 1px; width: 100%; }
 .home-ad-slot.ad-empty { display: none; }
+.home-ad-slot.native-ad-hidden { display: none; }
+.update-dialog { width: min(390px, calc(100% - 28px)); padding: 0; border: 0; border-radius: 22px; overflow: hidden; background: transparent; color: var(--ink); }
+.update-dialog::backdrop { background: #22392b99; }
+.update-card { display: grid; justify-items: center; gap: 11px; padding: 26px 23px 22px; background: linear-gradient(145deg, #fffdf1, #e8f0d5); border: 2px solid #9bb28d; border-radius: 22px; text-align: center; box-shadow: 0 14px 38px #28442c38; }
+.update-card h2 { margin: 0; font-size: 23px; letter-spacing: -.03em; }
+.update-card p { margin: 0; font-size: 13px; line-height: 1.45; }
+.update-badge { color: #876526; font-size: 10px; font-weight: 900; letter-spacing: .14em; }
+.update-version { color: #58715a; font-weight: 800; }
+.update-card .next { width: 100%; margin-top: 3px; }
 @media (prefers-reduced-motion: no-preference) {
   .title-truck { animation: title-truck-arrive 710ms cubic-bezier(.18, .76, .28, 1) both; }
   @keyframes title-truck-arrive {
@@ -645,6 +654,8 @@ canvas:active { cursor: grabbing; }
   .level-picker-header { padding-inline: 10px; }
 }
 @media (max-height: 410px) {
+  /* Keep the guide row reserved so showing a message cannot resize the board. */
+  .instruction[hidden] { display: flex !important; visibility: hidden; }
   .level-picker-header { padding-block: 8px; }
   .level-picker-header h2 { font-size: 21px; }
   .route-summary { margin-bottom: 6px; }

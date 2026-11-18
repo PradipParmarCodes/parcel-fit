@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "tsc && vite build --base ./",
-    "test": "tsx work/checks.ts && tsx work/mobile-checks.ts && tsx work/ui-checks.ts && tsx work/sound-checks.ts && tsx work/juice-checks.ts && tsx work/star-checks.ts && tsx work/ads-checks.ts",
+    "test": "tsx work/checks.ts && tsx work/mobile-checks.ts && tsx work/ui-checks.ts && tsx work/sound-checks.ts && tsx work/juice-checks.ts && tsx work/star-checks.ts && tsx work/ads-checks.ts && tsx work/update-checks.ts",
     "build:offline": "node scripts/offline.mjs"
   },
   "devDependencies": {
@@ -14,5 +14,11 @@
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
     "vite": "^6.1.0"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.6.2",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/cli": "^8.6.2",
+    "@capacitor/core": "^8.6.2"
   }
 }

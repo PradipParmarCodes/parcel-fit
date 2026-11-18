@@ -1,4 +1,6 @@
 import './style.css';
+import {App} from '@capacitor/app';
+import {Capacitor} from '@capacitor/core';
 import {achievementProgress,type AchievementStatus} from './achievements';
 import {GameSound} from './sound';
 import {installSettings} from './settings';
@@ -12,6 +14,7 @@ import {Game,levels,rotate,valid,solve,help,type Cell,type Placement} from './en
 import {actionCount,emptyAttempt,starText,starsFor,type AttemptStats,type StarRating} from './stars';
 import {freeHintsFor,shouldOfferRewardedHint} from './hints';
 import {createAds,type AdHost} from './ads';
+import {fetchUpdateManifest,requiresUpdate,type UpdateManifest} from './update';
 
 const game=new Game();
 const restored=readProgress();
@@ -43,6 +46,12 @@ const ctx=canvas.getContext('2d')!;
 const $=(id:string)=>document.getElementById(id)!;
 const gameElement=document.querySelector<HTMLElement>('.game')!;
 const homeElement=$('home-screen');
+const nativeApp=Capacitor.isNativePlatform();
+const updateDialog=$('update-dialog') as HTMLDialogElement;
+const updateOpen=$('update-open') as HTMLButtonElement;
+const updateRetry=$('update-retry') as HTMLButtonElement;
+let updateCheckInFlight=false;
+let requiredUpdate:UpdateManifest|null=null;
 const sound=new GameSound();
 let playing=false,gameFrameQueued=false,adOpen=false;
 const ads=createAds({
@@ -54,6 +63,54 @@ const ads=createAds({
 });
 const homeAdSlot=document.querySelector<HTMLElement>('.home-ad-slot');
 const homeAdContainer=$('container-9dedbeb1a7039a5b63a52d317c3a8904');
+if(nativeApp){
+ homeAdSlot?.classList.add('native-ad-hidden');
+}else if(typeof document.createElement==='function'){
+ const adsense=document.createElement('script');
+ adsense.async=true;
+ adsense.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9763002183080872';
+ adsense.crossOrigin='anonymous';
+ document.head.append(adsense);
+ if(homeAdContainer){
+  const adsterra=document.createElement('script');
+  adsterra.async=true;
+  adsterra.dataset.cfasync='false';
+  adsterra.src='https://bauval.org/21/9dedbeb1a7039a5b63a52d317c3a8904';
+  homeAdContainer.after(adsterra);
+ }
+}
+function showRequiredUpdate(manifest:UpdateManifest):void{
+ requiredUpdate=manifest;
+ $('update-message').textContent=manifest.message||'Update the app to continue playing.';
+ $('update-version').textContent=`Required version: ${manifest.minimumVersion}`;
+ updateOpen.disabled=false;
+ if(!updateDialog.open)updateDialog.showModal();
+}
+async function checkForRequiredUpdate():Promise<void>{
+ if(!nativeApp||updateCheckInFlight||typeof navigator==='undefined'||!navigator.onLine)return;
+ updateCheckInFlight=true;
+ try{
+  const [appInfo,manifest]=await Promise.all([App.getInfo(),fetchUpdateManifest()]);
+  if(!manifest){
+   if(updateDialog.open)$('update-message').textContent='Connect to the internet, then tap Check again.';
+   return;
+  }
+  if(requiresUpdate(appInfo.version,manifest.minimumVersion))showRequiredUpdate(manifest);
+  else if(updateDialog.open){requiredUpdate=null;updateDialog.close();}
+ }catch{
+  if(updateDialog.open)$('update-message').textContent='Update check failed. Connect to the internet and try again.';
+ }finally{updateCheckInFlight=false;}
+}
+updateDialog.addEventListener('cancel',event=>event.preventDefault());
+updateOpen.onclick=()=>{
+ if(!requiredUpdate)return;
+ try{window.open(requiredUpdate.storeUrl,'_system');}catch{window.location.href=requiredUpdate.storeUrl;}
+};
+updateRetry.onclick=()=>void checkForRequiredUpdate();
+if(nativeApp){
+ window.addEventListener('online',()=>void checkForRequiredUpdate());
+ void App.addListener('appStateChange',({isActive})=>{if(isActive)void checkForRequiredUpdate();});
+}
 if(homeAdSlot&&homeAdContainer&&typeof MutationObserver!=='undefined'){
  const hasAd=()=>Array.from(homeAdContainer.querySelectorAll<HTMLElement>('iframe, img, video, a, [role="img"]')).some(node=>{
   const rect=node.getBoundingClientRect(),style=getComputedStyle(node);
@@ -301,7 +358,7 @@ function landmark(x:number,y:number,theme:string){
 }
 function scenery(time:number){
  const colors=palette(),road=roadY(),theme=game.level.theme;
- const portraitGround=stage.wide?H:Math.min(H,road+82);
+ const portraitGround=stage.wide&&!stage.trayBottom?H:Math.min(H,road+82);
  const sky=ctx.createLinearGradient(0,0,0,road+16);
  sky.addColorStop(0,colors.sky);sky.addColorStop(1,colors.horizon);
  ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
@@ -323,7 +380,7 @@ function scenery(time:number){
  ctx.fillStyle=hill;ctx.fill();
  ctx.beginPath();ctx.moveTo(0,road-31);ctx.quadraticCurveTo(W*.22,road-100,W*.49,road-33);
  ctx.quadraticCurveTo(W*.76,road-70,W,road-31);ctx.lineTo(W,road+7);ctx.lineTo(0,road+7);ctx.closePath();ctx.fillStyle=colors.grass;ctx.fill();
- const markX=stage.wide?stage.bay.x-17:W-14;
+ const markX=stage.wide&&!stage.trayBottom?stage.bay.x-17:stage.wide?W-90:W-14;
  landmark(markX,road-10,theme);
  for(const [x,z] of [[19,43],[61,29],[markX-101,32]]){
   if(x>12)tree(x,road-7,z,colors.tree,theme==='orchard');
@@ -1142,3 +1199,4 @@ canvas.addEventListener('lostpointercapture',()=>{drag=null;});
 window.addEventListener('resize',resize);window.visualViewport?.addEventListener('resize',resize);
 if(typeof ResizeObserver!=='undefined')new ResizeObserver(()=>{resize();guideKey='';refreshGuide();}).observe(document.querySelector('.canvaswrap')!);
 update();updateHome();
+void checkForRequiredUpdate();

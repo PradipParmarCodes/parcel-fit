@@ -21,6 +21,9 @@ for(const [width,height]of sizes)for(const level of levels){
  for(let a=0;a<s.slots.length;a++)for(let b=a+1;b<s.slots.length;b++){const x=s.slots[a],y=s.slots[b];assert(!(x.x<y.x+y.w&&x.x+x.w>y.x&&x.y<y.y+y.h&&x.y+x.h>y.y),'Parcel slots must not overlap');}
  checked++;
 }
+const tiny=fitStage(483,87,levels[3]);
+assert(tiny.wide&&tiny.board.s>=14,'Very short landscape canvases must keep the truck readable');
+assert(tiny.road+24<=tiny.h,'Compact landscape road must remain inside the canvas');
 const g=new Game();g.set(0,g.level.solution[0]);
 const progress:Progress={version:saveVersion,index:0,state:g.state,completed:levels.map(()=>false),guide:'rotate',packings:levels.map(l=>l.parcels.map(()=>null))};
 const json=JSON.stringify(progress);const decoded=decodeProgress(json);assert(decoded);assert.deepEqual(decoded.state,g.state);assert.equal(decoded.guide,'rotate');
