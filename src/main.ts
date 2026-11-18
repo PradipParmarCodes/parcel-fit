@@ -54,6 +54,14 @@ let updateCheckInFlight=false;
 let requiredUpdate:UpdateManifest|null=null;
 const sound=new GameSound();
 let playing=false,gameFrameQueued=false,adOpen=false;
+type AdsPage=Window&AdHost&{adsbygoogle?:unknown[];adConfig?:AdHost['adBreak']};
+if(!nativeApp&&typeof document.createElement==='function'){
+ const adPage=window as AdsPage;
+ adPage.adsbygoogle=adPage.adsbygoogle??[];
+ const enqueue=(config:unknown)=>{adPage.adsbygoogle!.push(config);};
+ adPage.adBreak??=enqueue;
+ adPage.adConfig??=enqueue;
+}
 const ads=createAds({
  document,
  host:typeof window==='undefined'?undefined:window as AdHost,
